@@ -24,7 +24,7 @@ jobs:
 
       - name: Install extra packages for tests
         run: |
-          pip install wheel nose lxml
+          pip install wheel pynose lxml
 
       - name: Install package
         run: |
