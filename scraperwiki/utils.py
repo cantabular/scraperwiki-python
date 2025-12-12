@@ -3,6 +3,7 @@ Local version of ScraperWiki Utils, documentation here:
 https://scraperwiki.com/docs/python/python_help_documentation/
 '''
 import os
+import shutil
 import sys
 import warnings
 import tempfile
@@ -36,6 +37,13 @@ def scrape(url, params=None, user_agent=None):
 
 def pdftoxml(pdfdata, options=""):
     """converts pdf file to xml file"""
+    if not shutil.which('pdftohtml'):
+        warnings.warn(
+            'scraperwiki.pdftoxml requires pdftohtml, but pdftohtml was not found '
+            'in the PATH. If you wish to use this function, you probably need to '
+            'install pdftohtml.'
+        )
+        return None
     pdffout = tempfile.NamedTemporaryFile(suffix='.pdf')
     pdffout.write(pdfdata)
     pdffout.flush()
