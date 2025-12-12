@@ -28,7 +28,6 @@ class Blob(bytes):
 
 PYTHON_SQLITE_TYPE_MAP = {
     str: sqlalchemy.types.Text,
-    str: sqlalchemy.types.Text,
     int: sqlalchemy.types.BigInteger,
     bool: sqlalchemy.types.Boolean,
     float: sqlalchemy.types.Float,
@@ -36,18 +35,9 @@ PYTHON_SQLITE_TYPE_MAP = {
     datetime.date: sqlalchemy.types.Date,
     datetime.datetime: sqlalchemy.types.DateTime,
 
+    bytes: sqlalchemy.types.LargeBinary,
     Blob: sqlalchemy.types.LargeBinary,
 }
-
-if bytes is not str:
-    # On 2.7, bytes *is* str, so we don't want to overwrite that.
-    PYTHON_SQLITE_TYPE_MAP[bytes] = sqlalchemy.types.LargeBinary
-
-try:
-    PYTHON_SQLITE_TYPE_MAP[long] = sqlalchemy.types.BigInteger
-except NameError:
-    pass
-
 
 class _State:
 
