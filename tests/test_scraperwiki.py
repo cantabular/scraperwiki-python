@@ -1,15 +1,13 @@
 import datetime
 import json
 import os
-import re
-import shutil
 import sqlite3
 import warnings
 
 from subprocess import Popen, PIPE
 from textwrap import dedent
 
-from unittest import TestCase, main
+from unittest import TestCase
 
 import scraperwiki
 

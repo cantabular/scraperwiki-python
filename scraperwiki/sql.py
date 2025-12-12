@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from collections.abc import Iterable, Mapping
 
 import atexit
@@ -345,7 +344,7 @@ def fit_row(connection, row, unique_keys):
         new_column = sqlalchemy.Column(column_name,
                                        get_column_type(column_value))
 
-        if not column_name in list(_State.table.columns.keys()):
+        if column_name not in list(_State.table.columns.keys()):
             new_columns.append(new_column)
             _State.table.append_column(new_column)
 
