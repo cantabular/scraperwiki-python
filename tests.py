@@ -345,13 +345,11 @@ class TestDateTime(TestCase):
 class TestStatus(TestCase):
     'Test that the status endpoint works.'
 
-    def test_does_nothing_if_called_outside_box(self):
-        scraperwiki.status('ok')
+    def test_status(self):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-    def test_raises_exception_with_invalid_type_field(self):
-        self.assertRaises(AssertionError, scraperwiki.status, 'hello')
-
-    # XXX neeed some mocking tests for case of run inside a box
+            self.assertEqual(scraperwiki.status('ok'), None)
 
 class TestUnicodeColumns(TestCase):
     maxDiff = None

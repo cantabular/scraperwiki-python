@@ -9,7 +9,6 @@ import warnings
 import tempfile
 import urllib.parse
 import urllib.request
-import requests
 
 
 def scrape(url, params=None, user_agent=None):
@@ -63,26 +62,11 @@ def pdftoxml(pdfdata, options=""):
     return xmldata
 
 
-def _in_box():
-    return os.environ.get('HOME', None) == '/home'
-
-
 def status(type, message=None):
-    assert type in ['ok', 'error']
+    """Retained for backwards compatibility."""
+    warnings.warn("status() is no longer in use following ScraperWiki/Quickcode application shutdown", DeprecationWarning, stacklevel=2)
+    return
 
-    # if not running in a ScraperWiki platform box, silently do nothing
-    if not _in_box():
-        return "Not in box"
-
-    url = os.environ.get("SW_STATUS_URL", "https://app.quickcode.io/api/status")
-    if url == "OFF":
-        # For development mode
-        return
-
-    # send status update to the box
-    r = requests.post(url, data={'type': type, 'message': message})
-    r.raise_for_status()
-    return r.content
 
 def swimport(scrapername):
     return __import__(scrapername)
