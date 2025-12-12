@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# utils.py
-# David Jones, ScraperWiki Limited
-# Thomas Levine, ScraperWiki Limited
-
 '''
 Local version of ScraperWiki Utils, documentation here:
 https://scraperwiki.com/docs/python/python_help_documentation/
