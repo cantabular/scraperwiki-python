@@ -120,7 +120,7 @@ class TestSaveVar(DBTestCase):
 
 class SaveAndCheck(DBTestCase):
     def save_and_check(self, dataIn, tableIn, dataOut, tableOut=None, twice=True):
-        if tableOut == None:
+        if tableOut is None:
             tableOut = '[' + tableIn + ']'
 
         # Insert
@@ -140,7 +140,7 @@ class SaveAndCheck(DBTestCase):
 
             # Check
             expected1 = dataOut
-            expected2 = [dataIn] if type(dataIn) == dict else dataIn
+            expected2 = [dataIn] if type(dataIn) is dict else dataIn
 
             self.assertListEqual(observed1, expected1)
             self.assertListEqual(observed2, expected2)
