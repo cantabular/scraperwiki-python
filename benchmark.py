@@ -1,13 +1,12 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 import scraperwiki
 import os
-from six.moves import range
 
 rows = [{'id': i, 'test': i * 2, 's': "abc"} for i in range(1000)]
 
 try:
     os.remove('scraperwiki.sqlite')
-except OSError:
+except FileNotFoundError:
     pass
 
 scraperwiki.sql.save(['id'], rows)

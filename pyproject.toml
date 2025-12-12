@@ -10,7 +10,7 @@ authors = [
   { name = "ScraperWiki Developers", email = "hello@scraperwiki.com" }
 ]
 license = { text = "GPLv3+" }
-readme = "README.md"  # Assumes you have a README file
+readme = "README.rst"
 urls = { Repository = "https://github.com/cantabular/scraperwiki-python" }
 classifiers = [
     "Intended Audience :: Developers",
@@ -25,10 +25,8 @@ classifiers = [
     "Topic :: Database :: Front-Ends",
 ]
 dependencies = [
-    "requests==2.32.5",
-    "six==1.17.0",
-    "sqlalchemy==2.0.45",
-    "alembic==1.17.2",
+    "sqlalchemy>=2,<3",
+    "alembic",
 ]
 
 [tool.setuptools.packages.find]

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import datetime
 import json
 import os
@@ -13,7 +12,6 @@ from textwrap import dedent
 from unittest import TestCase, main
 
 import scraperwiki
-import six
 
 import sys
 # scraperwiki.sql._State.echo = True
@@ -64,9 +62,9 @@ class TestSaveGetVar(TestCase):
         date1 = datetime.datetime.now()
         date2 = datetime.date.today()
         scraperwiki.sql.save_var(u"weird\u1234", date1)
-        self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), six.text_type(date1))
+        self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), str(date1))
         scraperwiki.sql.save_var(u"weird\u1234", date2)
-        self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), six.text_type(date2))
+        self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), str(date2))
 
     def test_save_multiple_values(self):
         scraperwiki.sql.save_var(u'foo\xc3', u'hello')
@@ -94,7 +92,7 @@ class TestSaveVar(TestCase):
           """)
         ((colname, value, _type),) = self.cursor.fetchall()
         expected = [(u"birthday\xfe", u"\u1234November 30, 1888", "text",)]
-        observed = [(colname, type(b'')(value).decode('utf-8'), _type)]
+        observed = [(colname, value.decode('utf-8'), _type)]
         self.assertEqual(observed, expected)
 
 class SaveAndCheck(TestCase):
@@ -269,7 +267,7 @@ class TestSave(SaveAndCheck):
         self.save_and_check(
             {"text": s},
             "lxml",
-            [(six.text_type(s),)]
+            [(str(s),)]
         )
 
     def test_save_and_drop(self):
@@ -320,7 +318,7 @@ class TestDateTime(TestCase):
                 scraperwiki.sql.select("* FROM swdata"))
 
             self.assertEqual(
-                {u'keys': [u'birthday\xaa'], u'data': [(six.text_type(d),)]},
+                {u'keys': [u'birthday\xaa'], u'data': [(str(d),)]},
                 scraperwiki.sql.execute("SELECT * FROM swdata"))
 
         self.assertEqual(str(d), self.rawdate(column=u"birthday\xaa"))
@@ -331,7 +329,7 @@ class TestDateTime(TestCase):
             scraperwiki.sql.save([], {"birthday": d},
               table_name="datetimetest")
 
-            exemplar = six.text_type(d)
+            exemplar = str(d)
             # SQLAlchemy appears to convert with extended precision.
             exemplar += ".000000"
 
@@ -347,13 +345,11 @@ class TestDateTime(TestCase):
 class TestStatus(TestCase):
     'Test that the status endpoint works.'
 
-    def test_does_nothing_if_called_outside_box(self):
-        scraperwiki.status('ok')
+    def test_status(self):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-    def test_raises_exception_with_invalid_type_field(self):
-        self.assertRaises(AssertionError, scraperwiki.status, 'hello')
-
-    # XXX neeed some mocking tests for case of run inside a box
+            self.assertEqual(scraperwiki.status('ok'), None)
 
 class TestUnicodeColumns(TestCase):
     maxDiff = None
@@ -385,6 +381,3 @@ class TestImports(TestCase):
 
     def test_import_scraperwiki_special_utils(self):
         self.sw.pdftoxml
-
-if __name__ == '__main__':
-    main()

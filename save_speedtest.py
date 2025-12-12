@@ -1,6 +1,5 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 import scraperwiki
-from six.moves import range
 
 rows = [{'id': i, 'test': i * 2, 's': "xx"*i} for i in range(10)]
 

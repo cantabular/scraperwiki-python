@@ -10,25 +10,23 @@ import warnings
 
 import alembic.ddl
 import sqlalchemy
-import six
 
 DATABASE_NAME = os.environ.get("SCRAPERWIKI_DATABASE_NAME",
                                "sqlite:///scraperwiki.sqlite")
 
 DATABASE_TIMEOUT = float(os.environ.get("SCRAPERWIKI_DATABASE_TIMEOUT", 300))
 SECONDS_BETWEEN_COMMIT = 2
-unicode = str
 
 # The scraperwiki.sqlite.SqliteError exception
 SqliteError = sqlalchemy.exc.SQLAlchemyError
 
 class Blob(bytes):
-
     """
     Represents a blob as a string.
     """
+    pass
+
 PYTHON_SQLITE_TYPE_MAP = {
-    str: sqlalchemy.types.Text,
     str: sqlalchemy.types.Text,
     int: sqlalchemy.types.BigInteger,
     bool: sqlalchemy.types.Boolean,
@@ -37,18 +35,9 @@ PYTHON_SQLITE_TYPE_MAP = {
     datetime.date: sqlalchemy.types.Date,
     datetime.datetime: sqlalchemy.types.DateTime,
 
+    bytes: sqlalchemy.types.LargeBinary,
     Blob: sqlalchemy.types.LargeBinary,
 }
-
-if bytes is not str:
-    # On 2.7, bytes *is* str, so we don't want to overwrite that.
-    PYTHON_SQLITE_TYPE_MAP[bytes] = sqlalchemy.types.LargeBinary
-
-try:
-    PYTHON_SQLITE_TYPE_MAP[long] = sqlalchemy.types.BigInteger
-except NameError:
-    pass
-
 
 class _State:
 
@@ -183,7 +172,7 @@ def select(query, data=None):
 
     rows = []
     for row in result:
-        rows.append(dict(list(row._mapping.items())))
+        rows.append(dict(row._mapping))
 
     return rows
 
@@ -268,7 +257,7 @@ def save_var(name, value):
     if column_type == sqlalchemy.types.LargeBinary:
         value_blob = value
     else:
-        value_blob = unicode(value).encode('utf-8')
+        value_blob = str(value).encode('utf-8')
 
     values = dict(name=name,
                   value_blob=value_blob,
