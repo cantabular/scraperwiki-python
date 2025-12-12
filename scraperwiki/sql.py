@@ -10,7 +10,6 @@ import warnings
 
 import alembic.ddl
 import sqlalchemy
-import six
 
 DATABASE_NAME = os.environ.get("SCRAPERWIKI_DATABASE_NAME",
                                "sqlite:///scraperwiki.sqlite")
