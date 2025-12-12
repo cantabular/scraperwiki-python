@@ -96,8 +96,8 @@ class _State(object):
     @classmethod
     def reflect_metadata(cls):
         if cls.metadata is None:
-            cls.metadata = sqlalchemy.MetaData(bind=cls.engine)
-        cls.metadata.reflect()
+            cls.metadata = sqlalchemy.MetaData()
+        cls.metadata.reflect(bind=cls.engine)
 
     @classmethod
     def check_last_committed(cls):
@@ -197,7 +197,7 @@ def save(unique_keys, data, table_name='swdata'):
         raise TypeError("Data must be a single mapping or an iterable "
                         "of mappings")
 
-    insert = _State.table.insert(prefixes=['OR REPLACE'])
+    insert = sqlalchemy.insert(_State.table).prefix_with('OR REPLACE')
     for row in data:
         if not isinstance(row, Mapping):
             raise TypeError("Elements of data must be mappings, got {}".format(
@@ -251,7 +251,7 @@ def save_var(name, value):
         keep_existing=True
     )
 
-    vars_table.create(bind=connection, checkfirst=True)
+    vars_table.create(connection, checkfirst=True)
 
     column_type = get_column_type(value)
 
@@ -265,8 +265,9 @@ def save_var(name, value):
                   # value_blob=Blob(value),
                   type=column_type.__visit_name__.lower())
 
-    vars_table.insert(prefixes=['OR REPLACE']).values(**values).execute()
-
+    stmt = vars_table.insert(prefixes=['OR REPLACE']).values(**values)
+    connection.execute(stmt)
+    _State.new_transaction()
 
 def get_var(name, default=None):
     """
