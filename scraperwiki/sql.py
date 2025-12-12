@@ -17,7 +17,7 @@ DATABASE_NAME = os.environ.get("SCRAPERWIKI_DATABASE_NAME",
 
 DATABASE_TIMEOUT = float(os.environ.get("SCRAPERWIKI_DATABASE_TIMEOUT", 300))
 SECONDS_BETWEEN_COMMIT = 2
-unicode = type(u'')
+unicode = str
 
 # The scraperwiki.sqlite.SqliteError exception
 SqliteError = sqlalchemy.exc.SQLAlchemyError
@@ -28,7 +28,7 @@ class Blob(bytes):
     Represents a blob as a string.
     """
 PYTHON_SQLITE_TYPE_MAP = {
-    six.text_type: sqlalchemy.types.Text,
+    str: sqlalchemy.types.Text,
     str: sqlalchemy.types.Text,
     int: sqlalchemy.types.BigInteger,
     bool: sqlalchemy.types.Boolean,
@@ -50,7 +50,7 @@ except NameError:
     pass
 
 
-class _State(object):
+class _State:
 
     """
     This class maintains global state relating to the database such as
@@ -105,7 +105,7 @@ class _State(object):
             cls.new_transaction()
 
 
-class Transaction(object):
+class Transaction:
 
     """
     This context manager must be used when other services need
@@ -159,9 +159,9 @@ def execute(query, data=None):
         pass
 
     if not result.returns_rows:
-        return {u'data': [], u'keys': []}
+        return {'data': [], 'keys': []}
 
-    return {u'data': result.fetchall(), u'keys': list(result.keys())}
+    return {'data': result.fetchall(), 'keys': list(result.keys())}
 
 
 def select(query, data=None):
@@ -310,7 +310,7 @@ def get_var(name, default=None):
 
     # This is to do the variable type conversion through the SQL engine
     execute = connection.execute
-    execute("CREATE TEMPORARY TABLE _sw_tmp ('value' {})".format(result.type))
+    execute(f"CREATE TEMPORARY TABLE _sw_tmp ('value' {result.type})")
     execute("INSERT INTO _sw_tmp VALUES (:value)", value=result.value_blob)
     var = execute('SELECT value FROM _sw_tmp').fetchone().value
     execute("DROP TABLE _sw_tmp")

@@ -45,7 +45,7 @@ def pdftoxml(pdfdata, options=""):
 
     xmlin = tempfile.NamedTemporaryFile(mode='r', suffix='.xml')
     tmpxml = xmlin.name  # "temph.xml"
-    cmd = 'pdftohtml -xml -nodrm -zoom 1.5 -enc UTF-8 -noframes %s "%s" "%s"' % (
+    cmd = 'pdftohtml -xml -nodrm -zoom 1.5 -enc UTF-8 -noframes {} "{}" "{}"'.format(
         options, pdffout.name, os.path.splitext(tmpxml)[0])
     # can't turn off output, so throw away even stderr yeuch
     cmd = cmd + " >/dev/null 2>&1"
