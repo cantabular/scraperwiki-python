@@ -6,15 +6,15 @@ import os
 import sys
 import warnings
 import tempfile
-import six.moves.urllib.parse
-import six.moves.urllib.request
+import urllib.parse
+import urllib.request
 import requests
 
 
 def scrape(url, params=None, user_agent=None):
     '''
     Scrape a URL optionally with parameters.
-    This is effectively a wrapper around urllib2.urlopen.
+    This is effectively a wrapper around urllib.request.urlopen.
     '''
 
     headers = {}
@@ -22,12 +22,14 @@ def scrape(url, params=None, user_agent=None):
     if user_agent:
         headers['User-Agent'] = user_agent
 
-    data = params and six.moves.urllib.parse.urlencode(params) or None
-    req = six.moves.urllib.request.Request(url, data=data, headers=headers)
-    f = six.moves.urllib.request.urlopen(req)
+    data = None
+    if params:
+        data = urllib.parse.urlencode(params).encode('utf-8')
 
-    text = f.read()
-    f.close()
+    req = urllib.request.Request(url, data=data, headers=headers)
+
+    with urllib.request.urlopen(req) as f:
+        text = f.read()
 
     return text
 
