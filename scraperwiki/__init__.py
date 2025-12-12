@@ -9,6 +9,15 @@ from . import sql
 # Compatibility
 sqlite = sql
 
+__all__ = [
+        'scrape',
+        'pdftoxml',
+        'status',
+        'swimport',
+        'utils',
+        'sql',
+]
+
 class Error(Exception):
     """All ScraperWiki exceptions are instances of this class
     (usually via a subclass)."""
