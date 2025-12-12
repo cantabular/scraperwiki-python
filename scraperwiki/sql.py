@@ -1,5 +1,6 @@
 from __future__ import absolute_import, print_function
-from collections import Iterable, Mapping, OrderedDict
+from collections import OrderedDict
+from collections.abc import Iterable, Mapping
 
 import atexit
 import datetime
