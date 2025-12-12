@@ -144,7 +144,12 @@ def execute(query, data=None):
     if data is None:
         data = []
 
-    result = connection.execute(query, data)
+    if isinstance(data, list):
+        data = tuple(data)
+    elif not isinstance(data, (tuple, dict)):
+        data = (data,)
+
+    result = connection.exec_driver_sql(query, data)
 
     _State.table = None
     _State.metadata = None
@@ -169,11 +174,16 @@ def select(query, data=None):
     if data is None:
         data = []
 
-    result = connection.execute('select ' + query, data)
+    if isinstance(data, list):
+        data = tuple(data)
+    elif not isinstance(data, (tuple, dict)):
+        data = (data,)
+
+    result = connection.exec_driver_sql('select ' + query, data)
 
     rows = []
     for row in result:
-        rows.append(dict(list(row.items())))
+        rows.append(dict(list(row._mapping.items())))
 
     return rows
 
@@ -265,7 +275,7 @@ def save_var(name, value):
                   # value_blob=Blob(value),
                   type=column_type.__visit_name__.lower())
 
-    stmt = vars_table.insert(prefixes=['OR REPLACE']).values(**values)
+    stmt = sqlalchemy.insert(vars_table).prefix_with('OR REPLACE').values(**values)
     connection.execute(stmt)
     _State.new_transaction()
 
@@ -289,7 +299,7 @@ def get_var(name, default=None):
         return None
 
     table = sqlalchemy.Table(_State.vars_table_name, _State.metadata)
-    s = sqlalchemy.select([table.c.value_blob, table.c.type])
+    s = sqlalchemy.select(table.c.value_blob, table.c.type)
     s = s.where(table.c.name == name)
     result = connection.execute(s).fetchone()
 
