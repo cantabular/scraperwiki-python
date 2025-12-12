@@ -29,6 +29,12 @@ dependencies = [
     "alembic",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pynose",
+    "lxml",
+]
+
 [tool.setuptools.packages.find]
 where = ["."]  # Or wherever your 'scraperwiki' package folder is located
 include = ["scraperwiki*"]
