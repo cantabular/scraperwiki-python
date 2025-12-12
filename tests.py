@@ -92,7 +92,7 @@ class TestSaveVar(TestCase):
           """)
         ((colname, value, _type),) = self.cursor.fetchall()
         expected = [(u"birthday\xfe", u"\u1234November 30, 1888", "text",)]
-        observed = [(colname, type(b'')(value).decode('utf-8'), _type)]
+        observed = [(colname, value.decode('utf-8'), _type)]
         self.assertEqual(observed, expected)
 
 class SaveAndCheck(TestCase):
