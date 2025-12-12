@@ -27,4 +27,4 @@ jobs:
           pip install .[dev]
 
       - name: Run tests
-        run: nosetests --exe
+        run: pytest

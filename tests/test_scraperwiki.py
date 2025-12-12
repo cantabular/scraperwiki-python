@@ -17,23 +17,48 @@ import sys
 # scraperwiki.sql._State.echo = True
 DB_NAME = 'scraperwiki.sqlite'
 
-class Setup(TestCase):
-    def test_setup(self):
-        try:
-            os.remove('scraperwiki.sqlite')
-        except OSError:
-            pass
+class DBTestCase(TestCase):
+    """
+    Ensures database cleanup.
+    """
+    def setUp(self):
+        self.clean_db()
+        super().setUp()
+
+    def clean_db(self):
+        if scraperwiki.sql._State._connection:
+            scraperwiki.sql._State._connection.close()
+        scraperwiki.sql._State._connection = None
+
+        if scraperwiki.sql._State.engine:
+            scraperwiki.sql._State.engine.dispose()
+        scraperwiki.sql._State.engine = None
+
+        if scraperwiki.sql._State._transaction:
+            scraperwiki.sql._State._transaction.rollback()
+        scraperwiki.sql._State._transaction = None
+
+        scraperwiki.sql._State.metadata = None
+        scraperwiki.sql._State.table = None
+        scraperwiki.sql._State.table_pending = None
+
+        if os.path.exists(DB_NAME):
+            try:
+                os.remove(DB_NAME)
+            except OSError:
+                pass
+
 
 # called TestAAAWarning so that it gets run first by nosetests,
 # which we need, otherwise the warning has already happened.
-class TestAAAWarning(TestCase):
+class TestAAAWarning(DBTestCase):
     def test_save_no_warn(self):
         with warnings.catch_warnings():
             warnings.simplefilter("error")
             scraperwiki.sql.save(['id'], dict(id=4, tumble='weed'),
               table_name="warning_test")
 
-class TestSaveGetVar(TestCase):
+class TestSaveGetVar(DBTestCase):
     def savegetvar(self, var):
         scraperwiki.sql.save_var(u"weird\u1234", var)
         self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), var)
@@ -73,11 +98,11 @@ class TestSaveGetVar(TestCase):
         self.assertEqual(u'hello', scraperwiki.sql.get_var(u'foo\xc3'))
         self.assertEqual(u'goodbye\u1234', scraperwiki.sql.get_var(u'bar'))
 
-class TestGetNonexistantVar(TestCase):
+class TestGetNonexistantVar(DBTestCase):
     def test_get(self):
         self.assertIsNone(scraperwiki.sql.get_var(u'meatball\xff'))
 
-class TestSaveVar(TestCase):
+class TestSaveVar(DBTestCase):
     def setUp(self):
         super(TestSaveVar, self).setUp()
         scraperwiki.sql.save_var(u"birthday\xfe", u"\u1234November 30, 1888")
@@ -95,7 +120,7 @@ class TestSaveVar(TestCase):
         observed = [(colname, value.decode('utf-8'), _type)]
         self.assertEqual(observed, expected)
 
-class SaveAndCheck(TestCase):
+class SaveAndCheck(DBTestCase):
     def save_and_check(self, dataIn, tableIn, dataOut, tableOut=None, twice=True):
         if tableOut == None:
             tableOut = '[' + tableIn + ']'
@@ -122,7 +147,7 @@ class SaveAndCheck(TestCase):
             self.assertListEqual(observed1, expected1)
             self.assertListEqual(observed2, expected2)
 
-class SaveAndSelect(TestCase):
+class SaveAndSelect(DBTestCase):
     def save_and_select(self, d):
         scraperwiki.sql.save([], {u"foo\xdd": d})
         observed = scraperwiki.sql.select(u'* FROM swdata')[0][u'foo\xdd']
@@ -175,7 +200,7 @@ class TestUniqueKeys(SaveAndSelect):
         uniquecol = indices[u"keys"].index(u'unique')
         self.assertEqual(index[uniquecol], 1)
 
-class TestSaveColumn(TestCase):
+class TestSaveColumn(DBTestCase):
     def test_add_column(self):
         # Indicative for
         # https://github.com/scraperwiki/scraperwiki-python/issues/64
@@ -275,7 +300,7 @@ class TestSave(SaveAndCheck):
         scraperwiki.sql.execute(u"DROP TABLE dropper\xaa")
         scraperwiki.sql.save([], dict(foo=9), table_name=u"dropper\xaa")
 
-class TestQuestionMark(TestCase):
+class TestQuestionMark(DBTestCase):
     def test_one_question_mark_with_nonlist(self):
         scraperwiki.sql.execute(u'CREATE TABLE zhuozi\xaa (\xaa TEXT);')
         scraperwiki.sql.execute(u'INSERT INTO zhuozi\xaa VALUES (?)', u'apple\xff')
@@ -299,7 +324,7 @@ class TestQuestionMark(TestCase):
         scraperwiki.sql.execute('DROP TABLE zhuozi')
 
 
-class TestDateTime(TestCase):
+class TestDateTime(DBTestCase):
     def rawdate(self, table="swdata", column="datetime"):
         connection = sqlite3.connect(DB_NAME)
         cursor = connection.cursor()
@@ -351,7 +376,7 @@ class TestStatus(TestCase):
 
             self.assertEqual(scraperwiki.status('ok'), None)
 
-class TestUnicodeColumns(TestCase):
+class TestUnicodeColumns(DBTestCase):
     maxDiff = None
     def test_add_column_once_only(self):
         scraperwiki.sqlite.save(data = {"i": 1, u"a\xa0b": 1}, unique_keys = ['i'])
