@@ -1,0 +1,34 @@
+name: CI
+on:
+    push:
+      branches:
+        - master
+    pull_request:
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.9']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install extra packages for tests
+        run: |
+          pip install wheel nose lxml
+
+      - name: Install package
+        run: |
+          python setup.py install
+
+      - name: Run tests
+        run: nosetests --exe
