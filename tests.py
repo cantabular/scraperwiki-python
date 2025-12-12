@@ -12,7 +12,6 @@ from textwrap import dedent
 from unittest import TestCase, main
 
 import scraperwiki
-import six
 
 import sys
 # scraperwiki.sql._State.echo = True
@@ -63,9 +62,9 @@ class TestSaveGetVar(TestCase):
         date1 = datetime.datetime.now()
         date2 = datetime.date.today()
         scraperwiki.sql.save_var(u"weird\u1234", date1)
-        self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), six.text_type(date1))
+        self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), str(date1))
         scraperwiki.sql.save_var(u"weird\u1234", date2)
-        self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), six.text_type(date2))
+        self.assertEqual(scraperwiki.sql.get_var(u"weird\u1234"), str(date2))
 
     def test_save_multiple_values(self):
         scraperwiki.sql.save_var(u'foo\xc3', u'hello')
@@ -268,7 +267,7 @@ class TestSave(SaveAndCheck):
         self.save_and_check(
             {"text": s},
             "lxml",
-            [(six.text_type(s),)]
+            [(str(s),)]
         )
 
     def test_save_and_drop(self):
@@ -319,7 +318,7 @@ class TestDateTime(TestCase):
                 scraperwiki.sql.select("* FROM swdata"))
 
             self.assertEqual(
-                {u'keys': [u'birthday\xaa'], u'data': [(six.text_type(d),)]},
+                {u'keys': [u'birthday\xaa'], u'data': [(str(d),)]},
                 scraperwiki.sql.execute("SELECT * FROM swdata"))
 
         self.assertEqual(str(d), self.rawdate(column=u"birthday\xaa"))
@@ -330,7 +329,7 @@ class TestDateTime(TestCase):
             scraperwiki.sql.save([], {"birthday": d},
               table_name="datetimetest")
 
-            exemplar = six.text_type(d)
+            exemplar = str(d)
             # SQLAlchemy appears to convert with extended precision.
             exemplar += ".000000"
 
