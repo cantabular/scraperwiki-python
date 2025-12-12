@@ -16,7 +16,6 @@ DATABASE_NAME = os.environ.get("SCRAPERWIKI_DATABASE_NAME",
 
 DATABASE_TIMEOUT = float(os.environ.get("SCRAPERWIKI_DATABASE_TIMEOUT", 300))
 SECONDS_BETWEEN_COMMIT = 2
-unicode = str
 
 # The scraperwiki.sqlite.SqliteError exception
 SqliteError = sqlalchemy.exc.SQLAlchemyError
@@ -268,7 +267,7 @@ def save_var(name, value):
     if column_type == sqlalchemy.types.LargeBinary:
         value_blob = value
     else:
-        value_blob = unicode(value).encode('utf-8')
+        value_blob = str(value).encode('utf-8')
 
     values = dict(name=name,
                   value_blob=value_blob,
