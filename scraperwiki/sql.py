@@ -23,10 +23,11 @@ unicode = str
 SqliteError = sqlalchemy.exc.SQLAlchemyError
 
 class Blob(bytes):
-
     """
     Represents a blob as a string.
     """
+    pass
+
 PYTHON_SQLITE_TYPE_MAP = {
     str: sqlalchemy.types.Text,
     str: sqlalchemy.types.Text,
