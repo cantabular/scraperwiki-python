@@ -226,7 +226,6 @@ def show_tables():
     """
     _State.connection()
     _State.reflect_metadata()
-    metadata = _State.metadata
 
     response = select('name, sql from sqlite_master where type="table"')
 
@@ -311,7 +310,6 @@ def create_index(column_names, unique=False):
     a list of strings. If unique is True, it will be a
     unique index.
     """
-    connection = _State.connection()
     _State.reflect_metadata()
     table_name = _State.table.name
 
