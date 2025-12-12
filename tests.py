@@ -137,7 +137,7 @@ class TestUniqueKeys(SaveAndSelect):
     def test_empty(self):
         scraperwiki.sql.save([], {u"foo\xde": 3}, table_name=u"Chico\xcc")
         observed = scraperwiki.sql.execute(u'PRAGMA index_list(Chico\xcc)')
-        self.assertEqual(observed, {u'data': [], u'keys': []})
+        self.assertEqual(observed, {u'data': [], u'keys': ['seq', 'name', 'unique', 'origin', 'partial']})
 
     def test_two(self):
         scraperwiki.sql.save([u'foo\xdc', u'bar\xcd'], {u'foo\xdc': 3, u'bar\xcd': 9}, u'Harpo\xbb')
