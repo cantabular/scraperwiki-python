@@ -28,7 +28,7 @@ jobs:
 
       - name: Install package
         run: |
-          python setup.py install
+          pip install .
 
       - name: Run tests
         run: nosetests --exe
