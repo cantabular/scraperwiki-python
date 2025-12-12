@@ -25,8 +25,8 @@ classifiers = [
     "Topic :: Database :: Front-Ends",
 ]
 dependencies = [
-    "sqlalchemy==2.0.45",
-    "alembic==1.17.2",
+    "sqlalchemy>=2,<3",
+    "alembic",
 ]
 
 [tool.setuptools.packages.find]
