@@ -184,7 +184,7 @@ def select(query, data=None):
 
     rows = []
     for row in result:
-        rows.append(dict(list(row._mapping.items())))
+        rows.append(dict(row._mapping))
 
     return rows
 
