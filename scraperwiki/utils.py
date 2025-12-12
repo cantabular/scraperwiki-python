@@ -7,8 +7,6 @@
 Local version of ScraperWiki Utils, documentation here:
 https://scraperwiki.com/docs/python/python_help_documentation/
 '''
-from __future__ import absolute_import
-
 import os
 import sys
 import warnings
