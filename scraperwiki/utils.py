@@ -38,7 +38,7 @@ def pdftoxml(pdfdata, options=""):
     pdffout.write(pdfdata)
     pdffout.flush()
 
-    xmlin = tempfile.NamedTemporaryFile(mode='r', suffix='.xml')
+    xmlin = tempfile.NamedTemporaryFile(mode='r', suffix='.xml', encoding="utf-8")
     tmpxml = xmlin.name  # "temph.xml"
     cmd = 'pdftohtml -xml -nodrm -zoom 1.5 -enc UTF-8 -noframes {} "{}" "{}"'.format(
         options, pdffout.name, os.path.splitext(tmpxml)[0])
@@ -50,7 +50,7 @@ def pdftoxml(pdfdata, options=""):
     #xmlfin = open(tmpxml)
     xmldata = xmlin.read()
     xmlin.close()
-    return xmldata.decode('utf-8')
+    return xmldata
 
 
 def _in_box():
