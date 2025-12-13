@@ -9,13 +9,12 @@ description = "Local version of ScraperWiki libraries"
 authors = [
   { name = "ScraperWiki Developers", email = "hello@scraperwiki.com" }
 ]
-license = { text = "GPLv3+" }
 readme = "README.rst"
 urls = { Repository = "https://github.com/cantabular/scraperwiki-python" }
+license = "GPL-3.0-or-later"
 classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
