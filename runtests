@@ -1,4 +1,0 @@
-#!/bin/bash
-
-./tests.py $@
-rm -f keyify.py{,c} csv2sw.py{,c} scraperwiki.sqlite
