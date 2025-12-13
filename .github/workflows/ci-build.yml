@@ -37,4 +37,4 @@ jobs:
           make check-fix
 
       - name: Run tests
-        run: pytest
+        run: make test
