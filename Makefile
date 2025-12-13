@@ -1,16 +1,18 @@
+RUN := uv run
+
 test:
-	@pytest
+	@$(RUN) pytest
 
 fix:
-	@ruff check --fix
+	@$(RUN) ruff check --fix
 
 check-fix:
-	@ruff check
+	@$(RUN) ruff check
 
 format:
-	@ruff format
+	@$(RUN) ruff format
 
 check-format:
-	@ruff format --check
+	@$(RUN) ruff format --check
 
 .PHONY: test fix check-fix format check-format

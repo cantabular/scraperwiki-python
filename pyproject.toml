@@ -28,8 +28,9 @@ dependencies = [
     "sqlalchemy>=2,<3",
     "alembic",
 ]
+requires-python = ">=3.10"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "ruff",
     "pytest",
@@ -42,3 +43,6 @@ line-length = 88
 [tool.setuptools.packages.find]
 where = ["."]  # Or wherever your 'scraperwiki' package folder is located
 include = ["scraperwiki*"]
+
+[tool.uv]
+required-version = ">=0.9"
