@@ -42,3 +42,6 @@ line-length = 88
 [tool.setuptools.packages.find]
 where = ["."]  # Or wherever your 'scraperwiki' package folder is located
 include = ["scraperwiki*"]
+
+[tool.uv]
+required-version = ">=0.9"
