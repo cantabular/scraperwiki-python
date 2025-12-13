@@ -26,5 +26,13 @@ jobs:
         run: |
           pip install .[dev]
 
+      - name: Check formatting
+        run: |
+          make check-format
+
+      - name: Check linting
+        run: |
+          make check-fix
+
       - name: Run tests
         run: pytest
