@@ -85,7 +85,7 @@ Miscellaneous
 -------------
 
 scraperwiki.status(type, message=None)
-  If run on the ScraperWiki platform (the new one, not Classic), updates the visible status of the dataset.  If not on the platform, does nothing. ``type`` can be 'ok' or 'error'. If no ``message`` is given, it will show the time since the update. See `dataset status API <https://scraperwiki.com/help/developer#boxes-status>`_ in the documentation for details.
+  Functionality now removed since it was only for the now defunct ScraperWiki platform. It is retained but always returns None.
 
 scraperwiki.pdftoxml(pdfdata)
   Convert a byte string containing a PDF file into an XML file containing the coordinates and font of each text string (see `the pdftohtml documentation <http://linux.die.net/man/1/pdftohtml>`_ for details). This requires ``pdftohtml`` which is part of ``poppler-utils``. 
