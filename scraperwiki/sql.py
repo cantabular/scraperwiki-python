@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from collections.abc import Iterable, Mapping
 
 import atexit
@@ -11,8 +10,9 @@ import warnings
 import alembic.ddl
 import sqlalchemy
 
-DATABASE_NAME = os.environ.get("SCRAPERWIKI_DATABASE_NAME",
-                               "sqlite:///scraperwiki.sqlite")
+DATABASE_NAME = os.environ.get(
+    "SCRAPERWIKI_DATABASE_NAME", "sqlite:///scraperwiki.sqlite"
+)
 
 DATABASE_TIMEOUT = float(os.environ.get("SCRAPERWIKI_DATABASE_TIMEOUT", 300))
 SECONDS_BETWEEN_COMMIT = 2
@@ -20,31 +20,33 @@ SECONDS_BETWEEN_COMMIT = 2
 # The scraperwiki.sqlite.SqliteError exception
 SqliteError = sqlalchemy.exc.SQLAlchemyError
 
+
 class Blob(bytes):
     """
     Represents a blob as a string.
     """
+
     pass
+
 
 PYTHON_SQLITE_TYPE_MAP = {
     str: sqlalchemy.types.Text,
     int: sqlalchemy.types.BigInteger,
     bool: sqlalchemy.types.Boolean,
     float: sqlalchemy.types.Float,
-
     datetime.date: sqlalchemy.types.Date,
     datetime.datetime: sqlalchemy.types.DateTime,
-
     bytes: sqlalchemy.types.LargeBinary,
     Blob: sqlalchemy.types.LargeBinary,
 }
 
-class _State:
 
+class _State:
     """
     This class maintains global state relating to the database such as
     connection. It does not form part of the public interface.
     """
+
     db_path = DATABASE_NAME
     engine = None
     _connection = None
@@ -55,7 +57,7 @@ class _State:
     # _set_table(); it's left unassigned here to catch
     # accidental uses of it.
     # table_pending = None
-    vars_table_name = 'swvariables'
+    vars_table_name = "swvariables"
     last_commit = None
     echo = False
 
@@ -63,14 +65,16 @@ class _State:
     def connection(cls):
         if cls._connection is None:
             create = sqlalchemy.create_engine
-            cls.engine = create(cls.db_path, echo=cls.echo,
-                                connect_args={'timeout': DATABASE_TIMEOUT})
+            cls.engine = create(
+                cls.db_path, echo=cls.echo, connect_args={"timeout": DATABASE_TIMEOUT}
+            )
             cls._connection = cls.engine.connect()
             cls.new_transaction()
         if cls.table is None:
             cls.reflect_metadata()
-            cls.table = sqlalchemy.Table('swdata', _State.metadata,
-                                         extend_existing=True)
+            cls.table = sqlalchemy.Table(
+                "swdata", _State.metadata, extend_existing=True
+            )
         if cls._transaction is None:
             cls.new_transaction()
         return cls._connection
@@ -95,7 +99,6 @@ class _State:
 
 
 class Transaction:
-
     """
     This context manager must be used when other services need
     to connect to the database.
@@ -148,9 +151,9 @@ def execute(query, data=None):
         pass
 
     if not result.returns_rows:
-        return {'data': [], 'keys': []}
+        return {"data": [], "keys": []}
 
-    return {'data': result.fetchall(), 'keys': list(result.keys())}
+    return {"data": result.fetchall(), "keys": list(result.keys())}
 
 
 def select(query, data=None):
@@ -168,7 +171,7 @@ def select(query, data=None):
     elif not isinstance(data, (tuple, dict)):
         data = (data,)
 
-    result = connection.exec_driver_sql('select ' + query, data)
+    result = connection.exec_driver_sql("select " + query, data)
 
     rows = []
     for row in result:
@@ -177,7 +180,7 @@ def select(query, data=None):
     return rows
 
 
-def save(unique_keys, data, table_name='swdata'):
+def save(unique_keys, data, table_name="swdata"):
     """
     Save the given data to the table specified by `table_name`
     (which defaults to 'swdata'). The data must be a mapping
@@ -193,14 +196,14 @@ def save(unique_keys, data, table_name='swdata'):
         # Is a single datum
         data = [data]
     elif not isinstance(data, Iterable):
-        raise TypeError("Data must be a single mapping or an iterable "
-                        "of mappings")
+        raise TypeError("Data must be a single mapping or an iterable of mappings")
 
-    insert = sqlalchemy.insert(_State.table).prefix_with('OR REPLACE')
+    insert = sqlalchemy.insert(_State.table).prefix_with("OR REPLACE")
     for row in data:
         if not isinstance(row, Mapping):
-            raise TypeError("Elements of data must be mappings, got {}".format(
-                            type(row)))
+            raise TypeError(
+                "Elements of data must be mappings, got {}".format(type(row))
+            )
         fit_row(connection, row, unique_keys)
         connection.execute(insert.values(row))
     _State.check_last_committed()
@@ -212,8 +215,7 @@ def _set_table(table_name):
     """
     _State.connection()
     _State.reflect_metadata()
-    _State.table = sqlalchemy.Table(table_name, _State.metadata,
-                                    extend_existing=True)
+    _State.table = sqlalchemy.Table(table_name, _State.metadata, extend_existing=True)
 
     if list(_State.table.columns.keys()) == []:
         _State.table_pending = True
@@ -227,11 +229,10 @@ def show_tables():
     """
     _State.connection()
     _State.reflect_metadata()
-    metadata = _State.metadata
 
     response = select('name, sql from sqlite_master where type="table"')
 
-    return {row['name']: row['sql'] for row in response}
+    return {row["name"]: row["sql"] for row in response}
 
 
 def save_var(name, value):
@@ -243,11 +244,12 @@ def save_var(name, value):
     _State.reflect_metadata()
 
     vars_table = sqlalchemy.Table(
-        _State.vars_table_name, _State.metadata,
-        sqlalchemy.Column('name', sqlalchemy.types.Text, primary_key=True),
-        sqlalchemy.Column('value_blob', sqlalchemy.types.LargeBinary),
-        sqlalchemy.Column('type', sqlalchemy.types.Text),
-        keep_existing=True
+        _State.vars_table_name,
+        _State.metadata,
+        sqlalchemy.Column("name", sqlalchemy.types.Text, primary_key=True),
+        sqlalchemy.Column("value_blob", sqlalchemy.types.LargeBinary),
+        sqlalchemy.Column("type", sqlalchemy.types.Text),
+        keep_existing=True,
     )
 
     vars_table.create(connection, checkfirst=True)
@@ -257,29 +259,34 @@ def save_var(name, value):
     if column_type == sqlalchemy.types.LargeBinary:
         value_blob = value
     else:
-        value_blob = str(value).encode('utf-8')
+        value_blob = str(value).encode("utf-8")
 
-    values = dict(name=name,
-                  value_blob=value_blob,
-                  # value_blob=Blob(value),
-                  type=column_type.__visit_name__.lower())
+    values = dict(
+        name=name,
+        value_blob=value_blob,
+        # value_blob=Blob(value),
+        type=column_type.__visit_name__.lower(),
+    )
 
-    stmt = sqlalchemy.insert(vars_table).prefix_with('OR REPLACE').values(**values)
+    stmt = sqlalchemy.insert(vars_table).prefix_with("OR REPLACE").values(**values)
     connection.execute(stmt)
     _State.new_transaction()
+
 
 def get_var(name, default=None):
     """
     Returns the variable with the provided key from the
     table specified by _State.vars_table_name.
     """
-    alchemytypes = {"text": lambda x: x.decode('utf-8'),
-                    "big_integer": lambda x: int(x),
-                    "date": lambda x: x.decode('utf-8'),
-                    "datetime": lambda x: x.decode('utf-8'),
-                    "float": lambda x: float(x),
-                    "large_binary": lambda x: x,
-                    "boolean": lambda x: x==b'True'}
+    alchemytypes = {
+        "text": lambda x: x.decode("utf-8"),
+        "big_integer": lambda x: int(x),
+        "date": lambda x: x.decode("utf-8"),
+        "datetime": lambda x: x.decode("utf-8"),
+        "float": lambda x: float(x),
+        "large_binary": lambda x: x,
+        "boolean": lambda x: x == b"True",
+    }
 
     connection = _State.connection()
     _State.new_transaction()
@@ -301,9 +308,9 @@ def get_var(name, default=None):
     execute = connection.execute
     execute(f"CREATE TEMPORARY TABLE _sw_tmp ('value' {result.type})")
     execute("INSERT INTO _sw_tmp VALUES (:value)", value=result.value_blob)
-    var = execute('SELECT value FROM _sw_tmp').fetchone().value
+    var = execute("SELECT value FROM _sw_tmp").fetchone().value
     execute("DROP TABLE _sw_tmp")
-    return var.decode('utf-8')
+    return var.decode("utf-8")
 
 
 def create_index(column_names, unique=False):
@@ -312,18 +319,16 @@ def create_index(column_names, unique=False):
     a list of strings. If unique is True, it will be a
     unique index.
     """
-    connection = _State.connection()
     _State.reflect_metadata()
     table_name = _State.table.name
 
     table = _State.table
 
-    index_name = re.sub(r'[^a-zA-Z0-9]', '', table_name) + '_'
-    index_name += '_'.join(re.sub(r'[^a-zA-Z0-9]', '', x)
-                           for x in column_names)
+    index_name = re.sub(r"[^a-zA-Z0-9]", "", table_name) + "_"
+    index_name += "_".join(re.sub(r"[^a-zA-Z0-9]", "", x) for x in column_names)
 
     if unique:
-        index_name += '_unique'
+        index_name += "_unique"
 
     columns = []
     for column_name in column_names:
@@ -342,10 +347,9 @@ def fit_row(connection, row, unique_keys):
     """
     new_columns = []
     for column_name, column_value in list(row.items()):
-        new_column = sqlalchemy.Column(column_name,
-                                       get_column_type(column_value))
+        new_column = sqlalchemy.Column(column_name, get_column_type(column_value))
 
-        if not column_name in list(_State.table.columns.keys()):
+        if column_name not in list(_State.table.columns.keys()):
             new_columns.append(new_column)
             _State.table.append_column(new_column)
 
@@ -382,9 +386,7 @@ def get_column_type(column_value):
     """
     Return the appropriate SQL column type for the given value.
     """
-    return PYTHON_SQLITE_TYPE_MAP.get(type(column_value),
-      sqlalchemy.types.Text)
-
+    return PYTHON_SQLITE_TYPE_MAP.get(type(column_value), sqlalchemy.types.Text)
 
 
 def commit():

@@ -31,9 +31,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "ruff",
     "pytest",
     "lxml",
 ]
+
+[tool.ruff]
+line-length = 88
 
 [tool.setuptools.packages.find]
 where = ["."]  # Or wherever your 'scraperwiki' package folder is located
