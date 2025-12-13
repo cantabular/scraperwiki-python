@@ -1,10 +1,16 @@
-run:    build
-	@docker run \
-	    --rm \
-		-ti \
-	    scraperwiki-python
+test:
+	@pytest
 
-build:
-	@docker build -t scraperwiki-python .
+fix:
+	@ruff check --fix
 
-.PHONY: run build
+check-fix:
+	@ruff check
+
+format:
+	@ruff format
+
+check-format:
+	@ruff format --check
+
+.PHONY: test fix check-fix format check-format
