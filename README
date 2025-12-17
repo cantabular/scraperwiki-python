@@ -32,7 +32,6 @@ the schema automatically according to the data you save.
 
 Currently only supports SQLite. It will make a local SQLite database.
 It is based on `SQLAlchemy <https://pypi.python.org/pypi/SQLAlchemy>`_.
-You should expect it to support other SQL databases at a later date.
 
 scraperwiki.sql.save(unique_keys, data[, table_name="swdata"])
   Saves a data record into the datastore into the table given by ``table_name``.
