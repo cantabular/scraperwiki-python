@@ -1,10 +1,6 @@
 ScraperWiki Python library
 ==========================
 
-.. image:: https://travis-ci.org/scraperwiki/scraperwiki-python.png?branch=master
-   :alt: Build Status
-   :target: https://travis-ci.org/scraperwiki/scraperwiki-python
-
 This is a Python library for scraping web pages and saving data.
 It is the easiest way to save data on the ScraperWiki platform, and it
 can also be used locally or on your own servers.
