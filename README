@@ -63,7 +63,7 @@ scraperwiki.sql.select(sqlfrag[, vars])
   ``vars`` is an optional list of parameters, inserted when the select command contains ‘?’s.  This is like the feature in the ``.execute`` command, above.
 
 scraperwiki.sql.commit()
-  Functionality now removed. (sql.save auto-commits after every action).
+  Functionality now removed. It is retained, but does nothing. (sql.save auto-commits after every action).
 
 scraperwiki.sql.show_tables([dbname])
   Returns an array of tables and their schemas in the current database.
