@@ -1,10 +1,6 @@
 ScraperWiki Python library
 ==========================
 
-.. image:: https://travis-ci.org/scraperwiki/scraperwiki-python.png?branch=master
-   :alt: Build Status
-   :target: https://travis-ci.org/scraperwiki/scraperwiki-python
-
 This is a Python library for scraping web pages and saving data.
 It is the easiest way to save data on the ScraperWiki platform, and it
 can also be used locally or on your own servers.
@@ -67,13 +63,10 @@ scraperwiki.sql.select(sqlfrag[, vars])
   ``vars`` is an optional list of parameters, inserted when the select command contains ‘?’s.  This is like the feature in the ``.execute`` command, above.
 
 scraperwiki.sql.commit()
-  Commits to the file after a series of execute commands. (sql.save auto-commits after every action).
+  Functionality now removed. It is retained, but does nothing. (sql.save auto-commits after every action).
 
 scraperwiki.sql.show_tables([dbname])
   Returns an array of tables and their schemas in the current database.
-
-scraperwiki.sql.table_info(name)
-  Returns an array of attributes for each element of the table.
 
 scraperwiki.sql.save_var(key, value)
   Saves an arbitrary single-value into a table called ``swvariables``. Intended to store scraper state so that a scraper can continue after an interruption.
