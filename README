@@ -2,8 +2,10 @@ ScraperWiki Python library
 ==========================
 
 This is a Python library for scraping web pages and saving data.
-It is the easiest way to save data on the ScraperWiki platform, and it
-can also be used locally or on your own servers.
+
+**Warning: This library is now in maintenance mode.**
+
+**The library has been updated to work with Python 3.14 but there are no guarantees on future maintenance.**
 
 Installing
 ----------
