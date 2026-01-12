@@ -49,7 +49,7 @@ jobs:
       
       - name: Upload artifacts
         if: matrix.python-version == env.PYTHON_BUILD_VERSION
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: python-package-distributions
           path: dist/
