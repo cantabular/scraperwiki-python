@@ -70,6 +70,22 @@ jobs:
       url: https://pypi.org/p/scraperwiki
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate tag is tip of main
+        run: |
+          git fetch origin main
+          TAG_SHA=$(git rev-parse HEAD)
+          MAIN_SHA=$(git rev-parse origin/main)
+          
+          if [ "$TAG_SHA" != "$MAIN_SHA" ]; then
+            echo "Tag ($TAG_SHA) is not the tip of main ($MAIN_SHA)."
+            exit 1
+          fi
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
