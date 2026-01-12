@@ -3,7 +3,12 @@ on:
     push:
       branches:
         - main
+      tags:
+        - 'v*'
     pull_request:
+
+env:
+  PYTHON_BUILD_VERSION: '3.14'
 
 jobs:
   build:
@@ -41,3 +46,10 @@ jobs:
 
       - name: Build package
         run: uv build
+      
+      - name: Upload artifacts
+        if: matrix.python-version == env.PYTHON_BUILD_VERSION
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
