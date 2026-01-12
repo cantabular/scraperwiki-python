@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scraperwiki"
-version = "0.5.1"
+version = "1.0.0"
 description = "Local version of ScraperWiki libraries"
 authors = [
   { name = "ScraperWiki Developers", email = "hello@scraperwiki.com" }
