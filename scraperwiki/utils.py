@@ -5,10 +5,10 @@ https://scraperwiki.com/docs/python/python_help_documentation/
 
 import os
 import shutil
-import warnings
 import tempfile
 import urllib.parse
 import urllib.request
+import warnings
 
 
 def scrape(url, params=None, user_agent=None):
@@ -43,23 +43,22 @@ def pdftoxml(pdfdata, options=""):
             "install pdftohtml."
         )
         return None
-    pdffout = tempfile.NamedTemporaryFile(suffix=".pdf")
-    pdffout.write(pdfdata)
-    pdffout.flush()
 
-    xmlin = tempfile.NamedTemporaryFile(mode="r", suffix=".xml", encoding="utf-8")
-    tmpxml = xmlin.name  # "temph.xml"
-    cmd = 'pdftohtml -xml -nodrm -zoom 1.5 -enc UTF-8 -noframes {} "{}" "{}"'.format(
-        options, pdffout.name, os.path.splitext(tmpxml)[0]
-    )
-    # can't turn off output, so throw away even stderr yeuch
-    cmd = cmd + " >/dev/null 2>&1"
-    os.system(cmd)
+    with (
+        tempfile.NamedTemporaryFile(suffix=".pdf") as pdffout,
+        tempfile.NamedTemporaryFile(mode="r", suffix=".xml", encoding="utf-8") as xmlin,
+    ):
+        pdffout.write(pdfdata)
+        pdffout.flush()
 
-    pdffout.close()
-    # xmlfin = open(tmpxml)
-    xmldata = xmlin.read()
-    xmlin.close()
+        tmpxml = xmlin.name  # "temph.xml"
+        cmd = f'pdftohtml -xml -nodrm -zoom 1.5 -enc UTF-8 -noframes {options} "{pdffout.name}" "{os.path.splitext(tmpxml)[0]}"'
+        # can't turn off output, so throw away even stderr yeuch
+        cmd = cmd + " >/dev/null 2>&1"
+        os.system(cmd)
+
+        xmldata = xmlin.read()
+
     return xmldata
 
 
@@ -70,7 +69,6 @@ def status(type, message=None):
         DeprecationWarning,
         stacklevel=2,
     )
-    return
 
 
 def swimport(scrapername):
