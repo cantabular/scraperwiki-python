@@ -1,11 +1,10 @@
-from collections.abc import Iterable, Mapping
-
 import atexit
 import datetime
-import time
 import os
 import re
+import time
 import warnings
+from collections.abc import Iterable, Mapping
 
 import alembic.ddl
 import sqlalchemy
@@ -14,7 +13,7 @@ DATABASE_NAME = os.environ.get(
     "SCRAPERWIKI_DATABASE_NAME", "sqlite:///scraperwiki.sqlite"
 )
 
-DATABASE_TIMEOUT = float(os.environ.get("SCRAPERWIKI_DATABASE_TIMEOUT", 300))
+DATABASE_TIMEOUT = float(os.environ.get("SCRAPERWIKI_DATABASE_TIMEOUT", "300"))
 SECONDS_BETWEEN_COMMIT = 2
 
 # The scraperwiki.sqlite.SqliteError exception
@@ -25,8 +24,6 @@ class Blob(bytes):
     """
     Represents a blob as a string.
     """
-
-    pass
 
 
 PYTHON_SQLITE_TYPE_MAP = {
@@ -201,9 +198,7 @@ def save(unique_keys, data, table_name="swdata"):
     insert = sqlalchemy.insert(_State.table).prefix_with("OR REPLACE")
     for row in data:
         if not isinstance(row, Mapping):
-            raise TypeError(
-                "Elements of data must be mappings, got {}".format(type(row))
-            )
+            raise TypeError(f"Elements of data must be mappings, got {type(row)}")
         fit_row(connection, row, unique_keys)
         connection.execute(insert.values(row))
     _State.check_last_committed()
@@ -261,12 +256,12 @@ def save_var(name, value):
     else:
         value_blob = str(value).encode("utf-8")
 
-    values = dict(
-        name=name,
-        value_blob=value_blob,
+    values = {
+        "name": name,
+        "value_blob": value_blob,
         # value_blob=Blob(value),
-        type=column_type.__visit_name__.lower(),
-    )
+        "type": column_type.__visit_name__.lower(),
+    }
 
     stmt = sqlalchemy.insert(vars_table).prefix_with("OR REPLACE").values(**values)
     connection.execute(stmt)
